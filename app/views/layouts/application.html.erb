@@ -12,5 +12,8 @@
   <body>
     <%= render 'shared/navbar' %>
     <%= yield %>
+    <% flash.each do |name, msg| %>
+      <%= msg %>
+    <% end %>
   </body>
 </html>

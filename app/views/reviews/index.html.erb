@@ -1,2 +1,21 @@
 <h2>Customer Dashboard</h2>
 <%= link_to "Add Review",  new_review_path %>
+
+<% @reviews.each do |post| %>
+  <div class= "container">
+    <div class="card" style="width:400px">
+      <iframe width="100" class="card-img-top" height="315" src="https://www.youtube.com/embed/<%=post.movie.movie_url%>"></iframe>
+      <div class="card-body">
+        <h4 class="card-title"><%= post.movie.title%></h4>
+        <p class="card-text">Description: <%= post.description %></p>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Rating: <%= post.rating %></li>
+      </ul>
+      <div class="card-body">  
+        <%= link_to "Edit", edit_review_path(post) %>
+        <%= link_to "Delete", review_path(post), :method => :delete %>
+      </div>
+    </div>
+  </div>
+<% end %>

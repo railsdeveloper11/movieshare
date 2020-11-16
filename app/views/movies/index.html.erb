@@ -1,1 +1,12 @@
-<h1>hi</h1>
+<% @movies.each do |val| %>
+  <div class= "container">
+    <div class="card" style="width:400px">
+      <iframe width="100" class="card-img-top" height="315" src="https://www.youtube.com/embed/<%=val.movie_url%>"></iframe>
+      <div class="card-body">
+        <h4 class="card-title"><%= val.title%></h4>
+        <p class="card-text">Some example text some example text. John Doe is an architect and engineer</p>
+        <%= link_to "See more", movie_path(val) %>
+      </div>
+    </div>
+  </div>
+<% end %>  
