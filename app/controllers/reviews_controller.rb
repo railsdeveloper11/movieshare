@@ -1,5 +1,7 @@
 class ReviewsController < ApplicationController
   before_action :find_user, only: [:edit, :update, :destroy]
+  before_action :check_movie_url, only: :create
+
   def index
     @reviews = current_user.reviews
   end
@@ -12,16 +14,23 @@ class ReviewsController < ApplicationController
   end
 
   def create
-    movieId = find_movie(params[:review][:movie][:movie_url])
-    if movieId 
-      @review = current_user.reviews.new(require_params)
-      @review.movie_id = movieId
-      if @review.save
-        flash.alert = "Reviwed Succesfuly"
-        redirect_to reviews_path
+    if check_movie_url
+      uri    = URI.parse(@movieId) 
+      params = CGI.parse(uri.query)
+      @movie = Movie.find_or_initialize_by(movie_url: params["v"][0])
+      if @movie.save
+        @review = current_user.reviews.new(require_params)
+        if @review.save
+          flash.alert = "Reviwed Succesfuly"
+          redirect_to reviews_path
+        else
+          render_error_message @review.errors.full_messages
+        end
       else
-        render 'new'
+        render_error_message @movie.errors.full_messages
       end
+    else
+      render_error_message "Please enter valid URL"
     end
   end
 
@@ -45,21 +54,18 @@ class ReviewsController < ApplicationController
   end
 
   def require_params
-    params.require(:review).permit(:movie_url, :rating, :description)
+    params.require(:review).permit(:rating, :description).merge!(movie_id: @movie.id)
   end
 
-  def find_movie(url_id)
-    movie = Movie.all
-    url_id = url_id[-11..-1]
-    movie.each do |val|
-      if val.movie_url == url_id
-        return val.id
-      end
-    end
-    movie = Movie.new(movie_url: url_id)
-    if movie.save
-      return movie.id
-    end
+  def check_movie_url
+    @movieId = (params[:review][:movie][:movie_url])
+    pattern = Regexp.new(/(https?\:\/\/)?(www\.)?(youtube\.com)?(\/watch\?v=[A-Za-z0-9-_]{11})/)
+    pattern.match?(@movieId)
   end
 
+  def render_error_message(message)
+    flash.alert = message
+    @review = current_user.reviews.new
+    render 'new'
+  end
 end

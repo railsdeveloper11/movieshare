@@ -11,9 +11,9 @@
     <tbody>
       <% @movie.reviews.each do |post| %>
         <tr>
-          <td><%=post.description%></td>
-          <td><%=post.rating%></td>
-          <td><%=post.user.email%></td>
+          <td class="text-center"><%=post.description%></td>
+          <td class="text-center"><%=post.rating%></td>
+          <td class="text-center"><%=post.user.email%></td>
         </tr>
       <% end %>
     </tbody>
